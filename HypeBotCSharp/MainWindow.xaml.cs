@@ -151,8 +151,6 @@ namespace HypeBotCSharp
             IrcConnectionDialog ircConnectResult = new IrcConnectionDialog();
             ircConnectResult.ShowDialog();
 
-            // TODO: Fix program crashing when connect dialog box is closed without inputting text
-
             // Handle connection info dialog
             if (ircConnectResult != null)
             {
@@ -162,7 +160,7 @@ namespace HypeBotCSharp
             if (ircNick == "" || ircUser == "" || ircHostname == "" || ircNick == null || ircUser == null || ircHostname == null)
             {
                 // User did not enter full information; do not attempt to connect
-                AppendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)");
+                AppendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)\r");
                 return;
             }
 
@@ -175,6 +173,7 @@ namespace HypeBotCSharp
             {
                 ircConnectionUser = new IrcUser(ircNick, ircUser);
             }
+            // TODO: Check if hostname is valid
             ircClient = new IrcClient(ircHostname, ircConnectionUser);
 
             ircClient.ConnectionComplete += (s, e2) =>
