@@ -12,10 +12,10 @@
             <ColumnDefinition Width="0*"/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <RichTextBox x:Name="botOutputBox" HorizontalAlignment="Stretch" Height="auto" Margin="10,47,10,38" VerticalAlignment="Stretch" Width="auto" Grid.ColumnSpan="3" IsReadOnly="True" VerticalScrollBarVisibility="Visible">
+        <RichTextBox x:Name="botOutputBox" HorizontalAlignment="Stretch" Height="auto" Margin="10,47,10,38" VerticalAlignment="Stretch" Width="auto" Grid.ColumnSpan="3" IsReadOnly="True" VerticalScrollBarVisibility="Visible" FontFamily="Consolas">
             <FlowDocument>
                 <Paragraph>
-                    <Run Text="Please use 'Setup -> Connect' to connect to an IRC server"/>
+                    <Run Foreground="Red" Text="Please use 'Setup -> Connect' to connect to an IRC server"/>
                     <LineBreak/>
                 </Paragraph>
             </FlowDocument>

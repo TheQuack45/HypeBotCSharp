@@ -32,6 +32,7 @@ namespace HypeBotCSharp
         public static string ircPass = null;
         public static string ircUser = null;
         public static bool usePass = false;
+        Queue<string> previousCommandQueue;
 
         public MainWindow()
         {
@@ -42,7 +43,7 @@ namespace HypeBotCSharp
         {
             string commandText = cmdInputTextBox.Text;
             string[] commandList = Regex.Split(commandText, " ");
-
+            previousCommandQueue.Enqueue(commandText);
             cmdInputTextBox.Clear();
 
             if (commandList[0] == ":IRC")
@@ -58,67 +59,80 @@ namespace HypeBotCSharp
                     } 
                     else if (commandList[1] == "say")
                     {
-                        // Admin has chosen to manually say a message
-                        IrcChannel channel = null;
-                        if (commandList[2].StartsWith("#"))
-                        {
+                        // Admin has chosen to manually send a message
+                        if (ircClient.Channels.Any()) {
+                            // Client is connected to at least one channel
+                            IrcChannel channel = null;
+                            if (commandList[2].StartsWith("#"))
+                            {
+                                // Channel was specified in command
+                                try
+                                {
+                                    channel = ircClient.Channels[commandList[2]];
+                                }
+                                catch (Exception sendMessageException)
+                                {
+                                    AppendErrorText(botOutputBox, "You must specify a channel!");
+                                }
+                            }
+                            else
+                            {
+                                // Channel was not specified in command; send message to most recently connected channel
+                                channel = ircClient.Channels.Reverse().ToList()[0];
+                            }
+                            string message = "";
+                            if (commandList[2].StartsWith("#"))
+                            {
+                                // Channel was specified explicitly, continue as normal
+                                for (int i = 3; i < commandList.Length; i++)
+                                {
+                                    message += commandList[i] + " ";
+                                }
+                            }
+                            else
+                            {
+                                // Channel was specified implicitly, begin message creation from index 2
+                                for (int i = 2; i < commandList.Length; i++)
+                                {
+                                    message += commandList[i] + " ";
+                                }
+                            }
                             try
                             {
-                                channel = ircClient.Channels[commandList[2]];
+                                channel.SendMessage(message);
                             }
                             catch (Exception sendMessageException)
                             {
-                                botOutputBox.AppendText("You must specify a channel!");
+                                // Message was not sent successfully
+                                botOutputBox.AppendText(sendMessageException.ToString());
+                                return;
                             }
+                            // Write bot name and message to output box
+                            botOutputBox.AppendText("    <" + ircClient.User.Nick + "> " + message);
                         }
                         else
                         {
-                            channel = ircClient.Channels.Reverse().ToList()[0];
+                            // Client is not connected to any channel
+                            AppendErrorText(botOutputBox, "You must join a channel to send a message!");
                         }
-                        string message = "";
-                        if (commandList[2].StartsWith("#"))
-                        {
-                            // Channel was specified explicitly, continue as normal
-                            for (int i = 3; i < commandList.Length; i++)
-                            {
-                                message += commandList[i] + " ";
-                            }
-                        }
-                        else
-                        {
-                            // Channel was specified implicitly, begin message creation from index 2
-                            for (int i = 2; i < commandList.Length; i++)
-                            {
-                                message += commandList[i] + " ";
-                            }
-                        }
-                        try
-                        {
-                            channel.SendMessage(message);
-                        }
-                        catch (Exception sendMessageException)
-                        {
-                            botOutputBox.AppendText(sendMessageException.ToString());
-                            return;
-                        }
-                        botOutputBox.AppendText("    <" + ircClient.User.Nick + "> " + message);
                     }
                     else
                     {
                         // Command unrecognized
-                        botOutputBox.AppendText("Command not recognized!");
+                        AppendErrorText(botOutputBox, "Command not recognized!");
                     }
                 }
                 else
                 {
                     // Admin has attempted to make an IRC command without being connected to an IRC server
                     // Command must fail
-                    botOutputBox.AppendText("Please connect to an IRC server by using 'Setup -> Connect' before making IRC commands");
+                    AppendErrorText(botOutputBox, "Please connect to an IRC server by using 'Setup -> Connect' before making IRC commands");
                 }
             }
             else
             {
-                botOutputBox.AppendText("Command not recognized!");
+                // Command unrecognized
+                AppendErrorText(botOutputBox, "Command not recognized!");
             }
 
             botOutputBox.AppendText("\r");
@@ -192,9 +206,22 @@ namespace HypeBotCSharp
         {
             if (e.Key == Key.Return)
             {
+                // Admin pressed return; submit commadn
                 RoutedEventArgs blankEventArgs = null;
                 cmdSubmitButton_Click(this, blankEventArgs);
             }
+            else if (e.Key == Key.Up)
+            {
+                // Admin pressed up; switch to previous command
+            }
+        }
+
+        private void AppendErrorText(RichTextBox targetBox, string text)
+        {
+            // Append text with automatic styling for error text
+            TextRange tr = new TextRange(targetBox.Document.ContentEnd, targetBox.Document.ContentEnd);
+            tr.Text = text;
+            tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
         }
     }
 }
