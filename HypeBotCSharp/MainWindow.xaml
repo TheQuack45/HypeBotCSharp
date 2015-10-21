@@ -20,7 +20,7 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <TextBox x:Name="cmdInputTextBox" HorizontalAlignment="Stretch" Height="24" Margin="10,0,90,8" TextWrapping="Wrap" Text="Input Command" VerticalAlignment="Bottom" Width="auto" Grid.ColumnSpan="3" KeyDown="cmdInputTextBox_KeyDown"/>
+        <TextBox x:Name="cmdInputTextBox" HorizontalAlignment="Stretch" Height="24" Margin="10,0,90,8" TextWrapping="Wrap" Text="Input Command" VerticalAlignment="Bottom" Width="auto" Grid.ColumnSpan="3" KeyDown="cmdInputTextBox_KeyDown" PreviewKeyDown="cmdInputTextBox_PreviewKeyDown"/>
         <Button x:Name="cmdSubmitButton" Content="Enter" HorizontalAlignment="Right" Margin="0,0,10,8" VerticalAlignment="Bottom" Width="75" Height="24" Click="cmdSubmitButton_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Menu x:Name="mainWindowMenuBar" Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="517">
             <MenuItem x:Name="mainWindowMenuSetupDropDown" Header="Setup" Margin="10,0,0,0">

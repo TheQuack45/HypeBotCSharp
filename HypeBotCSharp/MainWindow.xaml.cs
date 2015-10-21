@@ -32,7 +32,9 @@ namespace HypeBotCSharp
         public static string ircPass = null;
         public static string ircUser = null;
         public static bool usePass = false;
-        Queue<string> previousCommandQueue;
+        Stack<string> previousCommandStack;
+        List<string> previousCommandList = new List<string>();
+        int previousCommandListIndex;
 
         public MainWindow()
         {
@@ -43,7 +45,8 @@ namespace HypeBotCSharp
         {
             string commandText = cmdInputTextBox.Text;
             string[] commandList = Regex.Split(commandText, " ");
-            previousCommandQueue.Enqueue(commandText);
+            previousCommandList.Add(commandText);
+            previousCommandListIndex = previousCommandList.Count;
             cmdInputTextBox.Clear();
 
             if (commandList[0] == ":IRC")
@@ -204,15 +207,13 @@ namespace HypeBotCSharp
 
         private void cmdInputTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
+            switch (e.Key)
             {
-                // Admin pressed return; submit commadn
-                RoutedEventArgs blankEventArgs = null;
-                cmdSubmitButton_Click(this, blankEventArgs);
-            }
-            else if (e.Key == Key.Up)
-            {
-                // Admin pressed up; switch to previous command
+                case Key.Return:
+                    // Admin pressed return; submit command
+                    RoutedEventArgs blankEventArgs = null;
+                    cmdSubmitButton_Click(this, blankEventArgs);
+                    break;
             }
         }
 
@@ -222,6 +223,35 @@ namespace HypeBotCSharp
             TextRange tr = new TextRange(targetBox.Document.ContentEnd, targetBox.Document.ContentEnd);
             tr.Text = text;
             tr.ApplyPropertyValue(TextElement.ForegroundProperty, Brushes.Red);
+        }
+
+        private void cmdInputTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Up:
+                    // Admin pressed up; switch to previous command
+                    if (previousCommandListIndex - 1 >= 0)
+                    {
+                        previousCommandListIndex -= 1;
+                        cmdInputTextBox.Text = previousCommandList[previousCommandListIndex];
+                    }
+                    e.Handled = true;
+                    break;
+                case Key.Down:
+                    // Admin pressed down; switch to next command
+                    if (previousCommandListIndex + 1 < previousCommandList.Count)
+                    {
+                        previousCommandListIndex += 1;
+                        cmdInputTextBox.Text = previousCommandList[previousCommandListIndex];
+                    }
+                    else
+                    {
+                        cmdInputTextBox.Text = "";
+                    }
+                    e.Handled = true;
+                    break;
+            }
         }
     }
 }
