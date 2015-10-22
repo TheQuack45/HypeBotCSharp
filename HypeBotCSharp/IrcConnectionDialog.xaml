@@ -15,12 +15,12 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
-        <TextBox x:Name="ircConnectHostTextBox" HorizontalAlignment="Left" Height="23" Margin="22,49,0,0" TextWrapping="Wrap" Text="Server Host IP" VerticalAlignment="Top" Width="212" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887"/>
+        <TextBox x:Name="ircConnectHostTextBox" HorizontalAlignment="Left" Height="23" Margin="22,49,0,0" TextWrapping="Wrap" Text="Server Host IP" VerticalAlignment="Top" Width="212" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" Foreground="Black" GotFocus="ircConnectHostTextBox_GotFocus" LostFocus="ircConnectHostTextBox_LostFocus"/>
         <Label x:Name="label" Content="IRC Connection" HorizontalAlignment="Left" Margin="83,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="26" Width="92"/>
-        <TextBox x:Name="ircConnectNickTextBox" HorizontalAlignment="Left" Height="23" Margin="22,77,0,0" TextWrapping="Wrap" Text="Nickname" VerticalAlignment="Top" Width="212" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887"/>
-        <TextBox x:Name="ircConnectUserTextBox" Height="23" Margin="22,105,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" HorizontalAlignment="Left" Width="212"/>
+        <TextBox x:Name="ircConnectNickTextBox" HorizontalAlignment="Left" Height="23" Margin="22,77,0,0" TextWrapping="Wrap" Text="Nickname" VerticalAlignment="Top" Width="212" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" GotFocus="ircConnectNickTextBox_GotFocus" LostFocus="ircConnectNickTextBox_LostFocus"/>
+        <TextBox x:Name="ircConnectUserTextBox" Height="23" Margin="22,105,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" HorizontalAlignment="Left" Width="212" GotFocus="ircConnectUserTextBox_GotFocus" LostFocus="ircConnectUserTextBox_LostFocus"/>
         <CheckBox x:Name="ircConnectUsePassCheckBox" Content="" HorizontalAlignment="Left" Margin="22,133,0,0" VerticalAlignment="Top" Height="16" Width="17" Checked="ircConnectUsePassCheckBox_Checked" Unchecked="ircConnectUsePassCheckBox_Unchecked"/>
-        <TextBox x:Name="ircConnectPassTextBox" Height="23" Margin="44,133,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" HorizontalAlignment="Left" Width="190" IsEnabled="False"/>
+        <TextBox x:Name="ircConnectPassTextBox" Height="23" Margin="44,133,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" HorizontalAlignment="Left" Width="190" IsEnabled="False" GotFocus="ircConnectPassTextBox_GotFocus" LostFocus="ircConnectPassTextBox_LostFocus"/>
         <Button x:Name="ircConnectSubmitButton" Grid.ColumnSpan="2" Content="Connect" HorizontalAlignment="Left" Height="24" Margin="83,164,0,0" VerticalAlignment="Top" Width="92" RenderTransformOrigin="0.669,0.43" Click="ircConnectSubmitButton_Click"/>
 
     </Grid>

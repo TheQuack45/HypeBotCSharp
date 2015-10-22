@@ -38,6 +38,9 @@
     <Reference Include="ChatSharp">
       <HintPath>..\packages\ChatSharp.dll</HintPath>
     </Reference>
+    <Reference Include="RedditSharp">
+      <HintPath>..\packages\RedditSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -61,6 +64,9 @@
     <Compile Include="IrcConnectionDialog.xaml.cs">
       <DependentUpon>IrcConnectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RedditConnectionDialog.xaml.cs">
+      <DependentUpon>RedditConnectionDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UtilFunc.cs" />
     <Page Include="IrcConnectionDialog.xaml">
       <SubType>Designer</SubType>
@@ -78,6 +84,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="RedditConnectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

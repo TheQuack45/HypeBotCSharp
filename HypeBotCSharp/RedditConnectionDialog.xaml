@@ -1,0 +1,19 @@
+﻿<Window x:Name="redditConnectionDialog" x:Class="HypeBotCSharp.RedditConnectionDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Reddit Connection" Height="175" Width="264">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="0*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="redditConnectUsernameTextbox" HorizontalAlignment="Left" Height="23" Margin="22,49,0,0" TextWrapping="Wrap" Text="Username" VerticalAlignment="Top" Width="212" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" GotFocus="redditConnectUsernameTextbox_GotFocus" LostFocus="redditConnectUsernameTextbox_LostFocus"/>
+        <Label x:Name="label" Content="Reddit Connection" HorizontalAlignment="Left" Margin="74,10,0,0" VerticalAlignment="Top" Grid.ColumnSpan="2" Height="26" Width="112" RenderTransformOrigin="0.304,0.538"/>
+        <TextBox x:Name="redditConnectPasswordTextbox" HorizontalAlignment="Left" Height="23" Margin="22,77,0,0" TextWrapping="Wrap" Text="Password" VerticalAlignment="Top" Width="212" Grid.ColumnSpan="2" RenderTransformOrigin="0.741,0.887" GotFocus="redditConnectPasswordTextbox_GotFocus" LostFocus="redditConnectPasswordTextbox_LostFocus"/>
+        <Button x:Name="ircConnectSubmitButton" Grid.ColumnSpan="2" Content="Connect" HorizontalAlignment="Left" Height="24" Margin="83,105,0,0" VerticalAlignment="Top" Width="92" RenderTransformOrigin="0.669,0.43" Click="ircConnectSubmitButton_Click"/>
+    </Grid>
+</Window>

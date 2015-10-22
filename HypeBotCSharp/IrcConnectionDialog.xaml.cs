@@ -35,7 +35,7 @@ namespace HypeBotCSharp
             if ((bool)this.ircConnectUsePassCheckBox.IsChecked)
             {
                 MainWindow.ircPass = this.ircConnectPassTextBox.Text;
-                MainWindow.usePass = true;
+                MainWindow.ircUsePass = true;
             }
 
             this.Close();
@@ -49,6 +49,54 @@ namespace HypeBotCSharp
         private void ircConnectUsePassCheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
             ircConnectPassTextBox.IsEnabled = false;
+        }
+
+        private void ircConnectHostTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Clear text box for entry
+            ircConnectHostTextBox.Text = "";
+        }
+
+        private void ircConnectHostTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Fill text box with placeholder
+            ircConnectHostTextBox.Text = "Server Host IP";
+        }
+
+        private void ircConnectNickTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Clear text box for entry
+            ircConnectNickTextBox.Text = "";
+        }
+
+        private void ircConnectNickTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Fill text box with placeholder
+            ircConnectNickTextBox.Text = "Nickname";
+        }
+
+        private void ircConnectUserTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Clear text box for entry
+            ircConnectUserTextBox.Text = "";
+        }
+
+        private void ircConnectUserTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Fill text box with placeholder
+            ircConnectUserTextBox.Text = "Username";
+        }
+
+        private void ircConnectPassTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Clear text box for entry
+            ircConnectPassTextBox.Text = "";
+        }
+
+        private void ircConnectPassTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Fill text box with placeholder
+            ircConnectPassTextBox.Text = "Password";
         }
     }
 }

@@ -20,16 +20,17 @@
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
-        <TextBox x:Name="cmdInputTextBox" HorizontalAlignment="Stretch" Height="24" Margin="10,0,90,8" TextWrapping="Wrap" Text="Input Command" VerticalAlignment="Bottom" Width="auto" Grid.ColumnSpan="3" KeyDown="cmdInputTextBox_KeyDown" PreviewKeyDown="cmdInputTextBox_PreviewKeyDown"/>
+        <TextBox x:Name="cmdInputTextBox" HorizontalAlignment="Stretch" Height="24" Margin="10,0,90,8" TextWrapping="Wrap" Text="Input Command" VerticalAlignment="Bottom" Width="auto" Grid.ColumnSpan="3" KeyDown="cmdInputTextBox_KeyDown" PreviewKeyDown="cmdInputTextBox_PreviewKeyDown" GotFocus="cmdInputTextBox_GotFocus" LostFocus="cmdInputTextBox_LostFocus"/>
         <Button x:Name="cmdSubmitButton" Content="Enter" HorizontalAlignment="Right" Margin="0,0,10,8" VerticalAlignment="Bottom" Width="75" Height="24" Click="cmdSubmitButton_Click" Grid.Column="1" Grid.ColumnSpan="2"/>
         <Menu x:Name="mainWindowMenuBar" Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="21" VerticalAlignment="Top" Width="517">
-            <MenuItem x:Name="mainWindowMenuSetupDropDown" Header="Setup" Margin="10,0,0,0">
+            <MenuItem x:Name="mainWindowMenuSetupDropDown" Header="Setup" Margin="10,0,0,0" Click="mainWindowMenuSetupDropDown_Click">
                 <MenuItem.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel Orientation="Vertical" />
                     </ItemsPanelTemplate>
                 </MenuItem.ItemsPanel>
-                <MenuItem x:Name="mainWindowMenuSetupDropDownConnectButton" Header="Connect" Click="mainWindowMenuSetupDropDownConnectButton_Click"/>
+                <MenuItem x:Name="mainWindowMenuSetupDropDownConnectButton" Header="IRC Connect" Click="mainWindowMenuSetupDropDownConnectButton_Click"/>
+                <MenuItem x:Name="mainWindowMenuSetupDropDownRedditConnectButton" Header="Reddit Connect" Click="mainWindowMenuSetupDropDownRedditConnectButton_Click"/>
             </MenuItem>
         </Menu>
         <Label x:Name="label" Content="Bot Console" Grid.Column="1" HorizontalAlignment="Left" Margin="10,21,0,0" VerticalAlignment="Top" Height="26" Width="77" Grid.ColumnSpan="2"/>

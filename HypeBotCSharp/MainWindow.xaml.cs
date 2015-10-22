@@ -17,6 +17,7 @@ using HypeBotCSharp;
 using ChatSharp;
 using ChatSharp.Events;
 using System.Net.Sockets;
+using RedditSharp;
 
 namespace HypeBotCSharp
 {
@@ -25,14 +26,20 @@ namespace HypeBotCSharp
     /// </summary>
     public partial class MainWindow : Window
     {
-        public bool isConnected = false;
+        public bool isIrcConnected = false;
+
         public static IrcClient ircClient;
         public static IrcUser ircConnectionUser;
         public static string ircHostname;
         public static string ircNick;
         public static string ircPass = null;
         public static string ircUser = null;
-        public static bool usePass = false;
+        public static bool ircUsePass = false;
+
+
+        public static string redditUsername;
+        public static string redditPassword;
+
         List<string> previousCommandList = new List<string>();
         int previousCommandListIndex;
 
@@ -51,7 +58,7 @@ namespace HypeBotCSharp
 
             if (commandList[0] == ":IRC")
             {
-                if (isConnected)
+                if (isIrcConnected)
                 {
                     // Bot is connected to an IRC server
                     // Admin can provide IRC commands
@@ -160,68 +167,6 @@ namespace HypeBotCSharp
             }
         }
 
-        private void mainWindowMenuSetupDropDownConnectButton_Click(object sender, RoutedEventArgs e)
-        {
-            IrcConnectionDialog ircConnectResult = new IrcConnectionDialog();
-            ircConnectResult.ShowDialog();
-
-            // Handle connection info dialog
-            if (ircConnectResult != null)
-            {
-                ircConnectResult.Close();
-            }
-            
-            if (ircNick == "" || ircUser == "" || ircHostname == "" || ircNick == null || ircUser == null || ircHostname == null)
-            {
-                // User did not enter full information; do not attempt to connect
-                AppendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)\r");
-                return;
-            }
-
-            botOutputBox.Document.Blocks.Clear();
-            if (usePass)
-            {
-                ircConnectionUser = new IrcUser(ircNick, ircUser, ircPass);
-            }
-            else
-            {
-                ircConnectionUser = new IrcUser(ircNick, ircUser);
-            }
-
-            if (UtilFunc.IsHostnameValid(ircHostname))
-            {
-                // Provided hostname is valid, continue
-                ircClient = new IrcClient(ircHostname, ircConnectionUser);
-            }
-            else
-            {
-                // Provided hostname is not valid, stop and inform user
-                AppendErrorText(botOutputBox, "Please enter a valid IRC server hostname!\r");
-                return;
-            }
-
-            ircClient.ConnectionComplete += (s, e2) =>
-            {
-                publicOutputBoxAppend(botOutputBox, "Connection Completed");
-                isConnected = true;
-            };
-
-            ircClient.PrivateMessageRecieved += (s, channelMessageReceivedEventArgs) => handleMessage(channelMessageReceivedEventArgs);
-
-            ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => publicOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
-
-            try
-            {
-                ircClient.ConnectAsync();
-            }
-            catch (SocketException connectionError)
-            {
-                AppendErrorText(botOutputBox, "Something went wrong. Error:\r");
-                AppendErrorText(botOutputBox, connectionError.Message + "\r");
-                AppendErrorText(botOutputBox, "Please try with a different IRC server.\r");
-            }
-        }
-
         private void handleMessage(PrivateMessageEventArgs messageReceivedEventArgs)
         {
             string messageText = messageReceivedEventArgs.PrivateMessage.Message.ToString();
@@ -295,6 +240,108 @@ namespace HypeBotCSharp
                     e.Handled = true;
                     break;
             }
+        }
+
+        private void mainWindowMenuSetupDropDownConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            IrcConnectionDialog ircConnectResult = new IrcConnectionDialog();
+            ircConnectResult.ShowDialog();
+
+            // Handle connection info dialog
+            if (ircConnectResult != null)
+            {
+                ircConnectResult.Close();
+            }
+
+            // Check for full information entry
+            if (ircNick == "" || ircUser == "" || ircHostname == "" || ircNick == null || ircUser == null || ircHostname == null)
+            {
+                // User did not enter full information; do not attempt to connect
+                AppendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)\r");
+                return;
+            }
+
+            botOutputBox.Document.Blocks.Clear();
+            if (ircUsePass)
+            {
+                ircConnectionUser = new IrcUser(ircNick, ircUser, ircPass);
+            }
+            else
+            {
+                ircConnectionUser = new IrcUser(ircNick, ircUser);
+            }
+
+            if (UtilFunc.IsHostnameValid(ircHostname))
+            {
+                // Provided hostname is valid, continue
+                ircClient = new IrcClient(ircHostname, ircConnectionUser);
+            }
+            else
+            {
+                // Provided hostname is not valid, stop and inform user
+                AppendErrorText(botOutputBox, "Please enter a valid IRC server hostname!\r");
+                return;
+            }
+
+            ircClient.ConnectionComplete += (s, e2) =>
+            {
+                publicOutputBoxAppend(botOutputBox, "Connection Completed");
+                isIrcConnected = true;
+            };
+
+            ircClient.PrivateMessageRecieved += (s, channelMessageReceivedEventArgs) => handleMessage(channelMessageReceivedEventArgs);
+
+            ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => publicOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
+
+            try
+            {
+                ircClient.ConnectAsync();
+            }
+            catch (SocketException connectionError)
+            {
+                AppendErrorText(botOutputBox, "Something went wrong. Error:\r");
+                AppendErrorText(botOutputBox, connectionError.Message + "\r");
+                AppendErrorText(botOutputBox, "Please try with a different IRC server.\r");
+            }
+        }
+
+        private void mainWindowMenuSetupDropDownRedditConnectButton_Click(object sender, RoutedEventArgs e)
+        {
+            RedditConnectionDialog redditConnectResult = new RedditConnectionDialog();
+            redditConnectResult.ShowDialog();
+
+            // Handle connection info dialog
+            if (redditConnectResult != null)
+            {
+                redditConnectResult.Close();
+            }
+
+            // Check for full information entry
+            if (redditUsername == "" || redditPassword == "" || redditUsername == null || redditPassword == null)
+            {
+                // User did not enter all required information, do not attempt to connect
+                AppendErrorText(botOutputBox, "Please enter all required fields (Username, password)\r");
+                return;
+            }
+
+
+        }
+
+        private void mainWindowMenuSetupDropDown_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void cmdInputTextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            // Clear text box for entry
+            cmdInputTextBox.Text = "";
+        }
+
+        private void cmdInputTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Fill text box with placeholder
+            cmdInputTextBox.Text = "Input Command";
         }
     }
 }
