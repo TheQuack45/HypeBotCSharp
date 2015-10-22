@@ -18,6 +18,8 @@ using ChatSharp;
 using ChatSharp.Events;
 using System.Net.Sockets;
 using RedditSharp;
+using RedditSharp.Things;
+using System.Security.Authentication;
 
 namespace HypeBotCSharp
 {
@@ -27,6 +29,7 @@ namespace HypeBotCSharp
     public partial class MainWindow : Window
     {
         public bool isIrcConnected = false;
+        public bool isRedditConnected = false;
 
         public static IrcClient ircClient;
         public static IrcUser ircConnectionUser;
@@ -36,7 +39,8 @@ namespace HypeBotCSharp
         public static string ircUser = null;
         public static bool ircUsePass = false;
 
-
+        public static Reddit redditConnection;
+        public static AuthenticatedUser redditUser;
         public static string redditUsername;
         public static string redditPassword;
 
@@ -324,7 +328,18 @@ namespace HypeBotCSharp
                 return;
             }
 
+            try
+            {
+                redditUser = redditConnection.LogIn(redditUsername, redditPassword);
+            }
+            catch (AuthenticationException)
+            {
+                AppendErrorText(botOutputBox, "Reddit login information provided did not authenticate.\rCheck that the provided username and password are correct.");
+                return;
+            }
 
+            isRedditConnected = true;
+            return;
         }
 
         private void mainWindowMenuSetupDropDown_Click(object sender, RoutedEventArgs e)
