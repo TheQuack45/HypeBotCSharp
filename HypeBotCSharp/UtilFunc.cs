@@ -17,9 +17,10 @@ namespace HypeBotCSharp
             bool isValid = false;
             try
             {
-                IPHostEntry ipHost = Dns.Resolve(ircHostname);
+                IPHostEntry ipHost = Dns.GetHostEntry(ircHostname);
                 isValid = true;
-            } catch (SocketException e)
+            }
+            catch (SocketException e)
             {
                 isValid = false;
             }

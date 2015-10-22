@@ -33,7 +33,6 @@ namespace HypeBotCSharp
         public static string ircPass = null;
         public static string ircUser = null;
         public static bool usePass = false;
-        Stack<string> previousCommandStack;
         List<string> previousCommandList = new List<string>();
         int previousCommandListIndex;
 
@@ -144,7 +143,21 @@ namespace HypeBotCSharp
 
         private void Window_Initialized(object sender, EventArgs e)
         {
-            
+            // Check if computer has valid internet connection
+            if (UtilFunc.IsHostnameValid("www.microsoft.com"))
+            {
+                // Internet connection exists, continue program run
+                return;
+            }
+            else
+            {
+                // Internet connection does not exist, halt program run
+                AppendErrorText(botOutputBox, "You must have a working internet connection to use this program!");
+                AppendErrorText(botOutputBox, "Please establish an internet connection and restart the program.");
+                mainWindowMenuSetupDropDown.IsEnabled = false;
+                cmdInputTextBox.IsEnabled = false;
+                cmdSubmitButton.IsEnabled = false;
+            }
         }
 
         private void mainWindowMenuSetupDropDownConnectButton_Click(object sender, RoutedEventArgs e)
@@ -211,14 +224,16 @@ namespace HypeBotCSharp
 
         private void handleMessage(PrivateMessageEventArgs messageReceivedEventArgs)
         {
-            string messageText = messageReceivedEventArgs.PrivateMessage.ToString();
+            string messageText = messageReceivedEventArgs.PrivateMessage.Message.ToString();
             string[] messageTextArr = Regex.Split(messageText, " ");
             if (messageTextArr[0] == "!hypeBot")
             {
                 // Message is command for HypeBot
                 if (messageTextArr[1] == "hello")
                 {
-                    ircClient.Channels[messageReceivedEventArgs.PrivateMessage.Source].SendMessage("Hello, " + messageReceivedEventArgs.PrivateMessage.User + "!");
+                    string returnMessage = "Hello, " + messageReceivedEventArgs.PrivateMessage.User.Nick + "!";
+                    ircClient.Channels[messageReceivedEventArgs.PrivateMessage.Source].SendMessage(returnMessage);
+                    publicOutputBoxAppend(botOutputBox, "    <" + ircClient.User.Nick + "> " + returnMessage);
                 }
             }
             else
