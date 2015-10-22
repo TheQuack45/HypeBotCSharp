@@ -182,7 +182,7 @@ namespace HypeBotCSharp
                 {
                     string returnMessage = "Hello, " + messageReceivedEventArgs.PrivateMessage.User.Nick + "!";
                     ircClient.Channels[messageReceivedEventArgs.PrivateMessage.Source].SendMessage(returnMessage);
-                    publicOutputBoxAppend(botOutputBox, "    <" + ircClient.User.Nick + "> " + returnMessage);
+                    asyncOutputBoxAppend(botOutputBox, "    <" + ircClient.User.Nick + "> " + returnMessage);
                 }
             }
             else
@@ -192,7 +192,7 @@ namespace HypeBotCSharp
             }
         }
 
-        private void publicOutputBoxAppend(RichTextBox targetBox, string text)
+        private void asyncOutputBoxAppend(RichTextBox targetBox, string text)
         {
             targetBox.Dispatcher.Invoke(new Action(() => targetBox.AppendText(text + "\r")));
         }
@@ -289,13 +289,15 @@ namespace HypeBotCSharp
 
             ircClient.ConnectionComplete += (s, e2) =>
             {
-                publicOutputBoxAppend(botOutputBox, "Connection Completed");
+                asyncOutputBoxAppend(botOutputBox, "Connection Completed");
                 isIrcConnected = true;
+                asyncElementSetEnabled(mainWindowMenuSetupDropDownConnectButton, false);
+                asyncElementSetEnabled(mainWindowMenuDestroyDropDownIrcButton, true);
             };
 
             ircClient.PrivateMessageRecieved += (s, channelMessageReceivedEventArgs) => handleMessage(channelMessageReceivedEventArgs);
 
-            ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => publicOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
+            ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => asyncOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
 
             try
             {
@@ -307,6 +309,11 @@ namespace HypeBotCSharp
                 AppendErrorText(botOutputBox, connectionError.Message + "\r");
                 AppendErrorText(botOutputBox, "Please try with a different IRC server.\r");
             }
+        }
+
+        public void asyncElementSetEnabled(Control targetElement, bool value)
+        {
+            targetElement.Dispatcher.Invoke(new Action(() => targetElement.IsEnabled = value));
         }
 
         private void mainWindowMenuSetupDropDownRedditConnectButton_Click(object sender, RoutedEventArgs e)
@@ -339,6 +346,8 @@ namespace HypeBotCSharp
             }
 
             isRedditConnected = true;
+            mainWindowMenuSetupDropDownRedditConnectButton.IsEnabled = false;
+            mainWindowMenuDestroyDropDownRedditButton.IsEnabled = true;
             return;
         }
 
@@ -349,14 +358,50 @@ namespace HypeBotCSharp
 
         private void cmdInputTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
+            // TODO: Check if user entered text in textbox before clearing!
             // Clear text box for entry
-            cmdInputTextBox.Text = "";
+            if (cmdInputTextBox.Text == "Input Command")
+            {
+                cmdInputTextBox.Text = "";
+            }
         }
 
         private void cmdInputTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
+            // TODO: Check if user entered text in textbox before clearing!
             // Fill text box with placeholder
-            cmdInputTextBox.Text = "Input Command";
+            if (cmdInputTextBox.Text == "")
+            {
+                cmdInputTextBox.Text = "Input Command";
+            }
+        }
+
+        private void mainWindowMenuDestroyDropDownIrcButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Log out of IRC channels and server and destroy variable
+            foreach (IrcChannel channel in ircClient.Channels) {
+                ircClient.PartChannel(channel.Name);
+            }
+            ircClient.Quit();
+            ircClient = null;
+
+            // Notify admin of disconnection
+            botOutputBox.AppendText("    Bot disconnected from IRC");
+
+            mainWindowMenuSetupDropDownConnectButton.IsEnabled = true;
+            mainWindowMenuDestroyDropDownIrcButton.IsEnabled = false;
+        }
+
+        private void mainWindowMenuDestroyDropDownRedditButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Destroy Reddit user variable
+            redditUser = null;
+            redditConnection = null;
+            redditUsername = null;
+            redditPassword = null;
+
+            mainWindowMenuSetupDropDownRedditConnectButton.IsEnabled = true;
+            mainWindowMenuDestroyDropDownRedditButton.IsEnabled = false;
         }
     }
 }

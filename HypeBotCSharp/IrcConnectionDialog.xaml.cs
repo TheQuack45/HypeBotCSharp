@@ -54,49 +54,73 @@ namespace HypeBotCSharp
         private void ircConnectHostTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Clear text box for entry
-            ircConnectHostTextBox.Text = "";
+            if (ircConnectHostTextBox.Text == "Server Host IP")
+            {
+                ircConnectHostTextBox.Text = "";
+            }
         }
 
         private void ircConnectHostTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Fill text box with placeholder
-            ircConnectHostTextBox.Text = "Server Host IP";
+            if (ircConnectHostTextBox.Text == "")
+            {
+                ircConnectHostTextBox.Text = "Server Host IP";
+            }
         }
 
         private void ircConnectNickTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Clear text box for entry
-            ircConnectNickTextBox.Text = "";
+            if (ircConnectNickTextBox.Text == "Nickname")
+            {
+                ircConnectNickTextBox.Text = "";
+            }
         }
 
         private void ircConnectNickTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Fill text box with placeholder
-            ircConnectNickTextBox.Text = "Nickname";
+            if (ircConnectNickTextBox.Text == "")
+            {
+                ircConnectNickTextBox.Text = "Nickname";
+            }
         }
 
         private void ircConnectUserTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Clear text box for entry
-            ircConnectUserTextBox.Text = "";
+            if (ircConnectUserTextBox.Text == "Username")
+            {
+                ircConnectUserTextBox.Text = "";
+            }
         }
 
         private void ircConnectUserTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Fill text box with placeholder
-            ircConnectUserTextBox.Text = "Username";
+            if (ircConnectUserTextBox.Text == "")
+            {
+                ircConnectUserTextBox.Text = "Username";
+            }
         }
 
         private void ircConnectPassTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Clear text box for entry
-            ircConnectPassTextBox.Text = "";
+            if (ircConnectPassTextBox.Text == "Password")
+            {
+                ircConnectPassTextBox.Text = "";
+            }
         }
 
         private void ircConnectPassTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Fill text box with placeholder
-            ircConnectPassTextBox.Text = "Password";
+            if (ircConnectPassTextBox.Text == "")
+            {
+                ircConnectPassTextBox.Text = "Password";
+            }
         }
     }
 }

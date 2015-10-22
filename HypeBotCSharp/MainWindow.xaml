@@ -32,7 +32,17 @@
                 <MenuItem x:Name="mainWindowMenuSetupDropDownConnectButton" Header="IRC Connect" Click="mainWindowMenuSetupDropDownConnectButton_Click"/>
                 <MenuItem x:Name="mainWindowMenuSetupDropDownRedditConnectButton" Header="Reddit Connect" Click="mainWindowMenuSetupDropDownRedditConnectButton_Click"/>
             </MenuItem>
+            <MenuItem x:Name="mainWindowMenuDestroyDropDown" Header="Destroy" Margin="10,0,0,0">
+                <MenuItem.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel Orientation="Vertical" />
+                    </ItemsPanelTemplate>
+                </MenuItem.ItemsPanel>
+                <MenuItem x:Name="mainWindowMenuDestroyDropDownIrcButton" Header="IRC Connection" Click="mainWindowMenuDestroyDropDownIrcButton_Click" IsEnabled="False"/>
+                <MenuItem x:Name="mainWindowMenuDestroyDropDownRedditButton" Header="Reddit Login" Click="mainWindowMenuDestroyDropDownRedditButton_Click" IsEnabled="False"/>
+            </MenuItem>
         </Menu>
+        
         <Label x:Name="label" Content="Bot Console" Grid.Column="1" HorizontalAlignment="Left" Margin="10,21,0,0" VerticalAlignment="Top" Height="26" Width="77" Grid.ColumnSpan="2"/>
     </Grid>
 </Window>

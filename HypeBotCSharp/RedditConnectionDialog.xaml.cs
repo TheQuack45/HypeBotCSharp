@@ -35,25 +35,37 @@ namespace HypeBotCSharp
         private void redditConnectUsernameTextbox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Clear text box for entry
-            redditConnectUsernameTextbox.Text = "";
+            if (redditConnectUsernameTextbox.Text == "Username")
+            {
+                redditConnectUsernameTextbox.Text = "";
+            }
         }
 
         private void redditConnectUsernameTextbox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Fill text box with placeholder
-            redditConnectUsernameTextbox.Text = "Username";
+            if (redditConnectUsernameTextbox.Text == "")
+            {
+                redditConnectUsernameTextbox.Text = "Username";
+            }
         }
 
         private void redditConnectPasswordTextbox_GotFocus(object sender, RoutedEventArgs e)
         {
             // Clear text box for entry
-            redditConnectPasswordTextbox.Text = "";
+            if (redditConnectPasswordTextbox.Text == "Password")
+            {
+                redditConnectPasswordTextbox.Text = "";
+            }
         }
 
         private void redditConnectPasswordTextbox_LostFocus(object sender, RoutedEventArgs e)
         {
             // Fill text box with placeholder
-            redditConnectPasswordTextbox.Text = "Password";
+            if (redditConnectPasswordTextbox.Text == "")
+            {
+                redditConnectPasswordTextbox.Text = "Password";
+            }
         }
     }
 }
