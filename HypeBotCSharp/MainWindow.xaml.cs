@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using HypeBotCSharp;
 using ChatSharp;
 using ChatSharp.Events;
+using System.Net.Sockets;
 
 namespace HypeBotCSharp
 {
@@ -173,8 +174,18 @@ namespace HypeBotCSharp
             {
                 ircConnectionUser = new IrcUser(ircNick, ircUser);
             }
-            // TODO: Check if hostname is valid
-            ircClient = new IrcClient(ircHostname, ircConnectionUser);
+
+            if (UtilFunc.IsHostnameValid(ircHostname))
+            {
+                // Provided hostname is valid, continue
+                ircClient = new IrcClient(ircHostname, ircConnectionUser);
+            }
+            else
+            {
+                // Provided hostname is not valid, stop and inform user
+                AppendErrorText(botOutputBox, "Please enter a valid IRC server hostname!\r");
+                return;
+            }
 
             ircClient.ConnectionComplete += (s, e2) =>
             {
@@ -186,7 +197,16 @@ namespace HypeBotCSharp
 
             ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => publicOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
 
-            ircClient.ConnectAsync();
+            try
+            {
+                ircClient.ConnectAsync();
+            }
+            catch (SocketException connectionError)
+            {
+                AppendErrorText(botOutputBox, "Something went wrong. Error:\r");
+                AppendErrorText(botOutputBox, connectionError.Message + "\r");
+                AppendErrorText(botOutputBox, "Please try with a different IRC server.\r");
+            }
         }
 
         private void handleMessage(PrivateMessageEventArgs messageReceivedEventArgs)
