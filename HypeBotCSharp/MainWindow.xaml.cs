@@ -185,7 +185,7 @@ namespace HypeBotCSharp
             // Output message text
             asyncOutputBoxAppendNoBreak(botOutputBox, "    <");
             asyncOutputBoxColorAppend(botOutputBox, messageReceivedEventArgs.PrivateMessage.User.Nick.ToString(), "Green");
-            asyncOutputBoxColorAppend(botOutputBox, "> " + messageReceivedEventArgs.PrivateMessage.Message, "Black");
+            asyncOutputBoxColorAppend(botOutputBox, "> " + messageReceivedEventArgs.PrivateMessage.Message + "\r", "Black");
 
             if (messageTextArr[0] == "!hypeBot")
             {
@@ -411,7 +411,6 @@ namespace HypeBotCSharp
 
         private void cmdInputTextBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            // TODO: Check if user entered text in textbox before clearing!
             // Clear text box for entry
             if (cmdInputTextBox.Text == "Input Command")
             {
@@ -421,7 +420,6 @@ namespace HypeBotCSharp
 
         private void cmdInputTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            // TODO: Check if user entered text in textbox before clearing!
             // Fill text box with placeholder
             if (cmdInputTextBox.Text == "")
             {
@@ -455,6 +453,11 @@ namespace HypeBotCSharp
 
             mainWindowMenuSetupDropDownRedditConnectButton.IsEnabled = true;
             mainWindowMenuDestroyDropDownRedditButton.IsEnabled = false;
+        }
+
+        private void mainWindowMenuRedditDropDownSetupButton_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
