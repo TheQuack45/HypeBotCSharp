@@ -20,6 +20,8 @@ using System.Net.Sockets;
 using RedditSharp;
 using RedditSharp.Things;
 using System.Security.Authentication;
+using System.Threading;
+using System.ComponentModel;
 
 namespace HypeBotCSharp
 {
@@ -86,7 +88,7 @@ namespace HypeBotCSharp
                                 }
                                 catch (Exception sendMessageException)
                                 {
-                                    AppendErrorText(botOutputBox, "You must specify a channel!");
+                                    appendErrorText(botOutputBox, "You must specify a channel!");
                                 }
                             }
                             else
@@ -127,26 +129,26 @@ namespace HypeBotCSharp
                         else
                         {
                             // Client is not connected to any channel
-                            AppendErrorText(botOutputBox, "You must join a channel to send a message!");
+                            appendErrorText(botOutputBox, "You must join a channel to send a message!");
                         }
                     }
                     else
                     {
                         // Command unrecognized
-                        AppendErrorText(botOutputBox, "Command not recognized!");
+                        appendErrorText(botOutputBox, "Command not recognized!");
                     }
                 }
                 else
                 {
                     // Admin has attempted to make an IRC command without being connected to an IRC server
                     // Command must fail
-                    AppendErrorText(botOutputBox, "Please connect to an IRC server by using 'Setup -> Connect' before making IRC commands");
+                    appendErrorText(botOutputBox, "Please connect to an IRC server by using 'Setup -> Connect' before making IRC commands");
                 }
             }
             else
             {
                 // Command unrecognized
-                AppendErrorText(botOutputBox, "Command not recognized!");
+                appendErrorText(botOutputBox, "Command not recognized!");
             }
 
             botOutputBox.AppendText("\r");
@@ -163,23 +165,34 @@ namespace HypeBotCSharp
             else
             {
                 // Internet connection does not exist, halt program run
-                AppendErrorText(botOutputBox, "You must have a working internet connection to use this program!");
-                AppendErrorText(botOutputBox, "Please establish an internet connection and restart the program.");
+                appendErrorText(botOutputBox, "You must have a working internet connection to use this program!");
+                appendErrorText(botOutputBox, "Please establish an internet connection and restart the program.");
                 mainWindowMenuSetupDropDown.IsEnabled = false;
                 cmdInputTextBox.IsEnabled = false;
                 cmdSubmitButton.IsEnabled = false;
             }
         }
 
+        /// <summary>
+        /// Handle IRC messages that are commands
+        /// </summary>
+        /// <param name="messageReceivedEventArgs">Event args of message to handle</param>
         private void handleMessage(PrivateMessageEventArgs messageReceivedEventArgs)
         {
             string messageText = messageReceivedEventArgs.PrivateMessage.Message.ToString();
             string[] messageTextArr = Regex.Split(messageText, " ");
+
+            // Output message text
+            asyncOutputBoxAppendNoBreak(botOutputBox, "    <");
+            asyncOutputBoxColorAppend(botOutputBox, messageReceivedEventArgs.PrivateMessage.User.Nick.ToString(), "Green");
+            asyncOutputBoxColorAppend(botOutputBox, "> " + messageReceivedEventArgs.PrivateMessage.Message, "Black");
+
             if (messageTextArr[0] == "!hypeBot")
             {
                 // Message is command for HypeBot
                 if (messageTextArr[1] == "hello")
                 {
+                    // Message requests "hello" response
                     string returnMessage = "Hello, " + messageReceivedEventArgs.PrivateMessage.User.Nick + "!";
                     ircClient.Channels[messageReceivedEventArgs.PrivateMessage.Source].SendMessage(returnMessage);
                     asyncOutputBoxAppend(botOutputBox, "    <" + ircClient.User.Nick + "> " + returnMessage);
@@ -192,11 +205,35 @@ namespace HypeBotCSharp
             }
         }
 
+        /// <summary>
+        /// Provides access to RichTextBox append from separate threads
+        /// </summary>
+        /// <param name="targetBox">RichTextBox to append text to</param>
+        /// <param name="text">Text to append</param>
         private void asyncOutputBoxAppend(RichTextBox targetBox, string text)
         {
             targetBox.Dispatcher.Invoke(new Action(() => targetBox.AppendText(text + "\r")));
         }
 
+        private void asyncOutputBoxAppendNoBreak(RichTextBox targetBox, string text)
+        {
+            targetBox.Dispatcher.Invoke(new Action(() => targetBox.AppendText(text)));
+        }
+
+        private void asyncOutputBoxColorAppend(RichTextBox targetBox, string text, string color)
+        {
+            targetBox.Dispatcher.Invoke(new Action(() =>
+            {
+                TypeConverter colorConverter = new ColorConverter();
+                Color colorColor = (Color)colorConverter.ConvertFromString(color);
+                SolidColorBrush colorBrush = new SolidColorBrush(colorColor);
+
+                TextRange tr = new TextRange(targetBox.Document.ContentEnd, targetBox.Document.ContentEnd);
+                tr.Text = text;
+                tr.ApplyPropertyValue(TextElement.ForegroundProperty, colorBrush);
+            }));
+        }
+        
         private void cmdInputTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -209,7 +246,12 @@ namespace HypeBotCSharp
             }
         }
 
-        private void AppendErrorText(RichTextBox targetBox, string text)
+        /// <summary>
+        /// Append text to RichTextBox with red coloring; for errors
+        /// </summary>
+        /// <param name="targetBox">Box to append text to</param>
+        /// <param name="text">Error text to append</param>
+        private void appendErrorText(RichTextBox targetBox, string text)
         {
             // Append text with automatic styling for error text
             TextRange tr = new TextRange(targetBox.Document.ContentEnd, targetBox.Document.ContentEnd);
@@ -261,7 +303,7 @@ namespace HypeBotCSharp
             if (ircNick == "" || ircUser == "" || ircHostname == "" || ircNick == null || ircUser == null || ircHostname == null)
             {
                 // User did not enter full information; do not attempt to connect
-                AppendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)\r");
+                appendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)\r");
                 return;
             }
 
@@ -283,7 +325,7 @@ namespace HypeBotCSharp
             else
             {
                 // Provided hostname is not valid, stop and inform user
-                AppendErrorText(botOutputBox, "Please enter a valid IRC server hostname!\r");
+                appendErrorText(botOutputBox, "Please enter a valid IRC server hostname!\r");
                 return;
             }
 
@@ -297,7 +339,18 @@ namespace HypeBotCSharp
 
             ircClient.PrivateMessageRecieved += (s, channelMessageReceivedEventArgs) => handleMessage(channelMessageReceivedEventArgs);
 
-            ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => asyncOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
+            ircClient.RawMessageRecieved += (s, messageReceivedEventArgs) => {
+                if (messageReceivedEventArgs.Message.Contains("PRIVMSG"))
+                {
+                    // Message is a private message
+                    // Ignore, message will be handled by Private Message code
+                    return;
+                }
+                else
+                {
+                    asyncOutputBoxAppend(botOutputBox, "    " + messageReceivedEventArgs.Message.ToString());
+                }
+            };
 
             try
             {
@@ -305,9 +358,9 @@ namespace HypeBotCSharp
             }
             catch (SocketException connectionError)
             {
-                AppendErrorText(botOutputBox, "Something went wrong. Error:\r");
-                AppendErrorText(botOutputBox, connectionError.Message + "\r");
-                AppendErrorText(botOutputBox, "Please try with a different IRC server.\r");
+                appendErrorText(botOutputBox, "Something went wrong. Error:\r");
+                appendErrorText(botOutputBox, connectionError.Message + "\r");
+                appendErrorText(botOutputBox, "Please try with a different IRC server.\r");
             }
         }
 
@@ -331,7 +384,7 @@ namespace HypeBotCSharp
             if (redditUsername == "" || redditPassword == "" || redditUsername == null || redditPassword == null)
             {
                 // User did not enter all required information, do not attempt to connect
-                AppendErrorText(botOutputBox, "Please enter all required fields (Username, password)\r");
+                appendErrorText(botOutputBox, "Please enter all required fields (Username, password)\r");
                 return;
             }
 
@@ -341,7 +394,7 @@ namespace HypeBotCSharp
             }
             catch (AuthenticationException)
             {
-                AppendErrorText(botOutputBox, "Reddit login information provided did not authenticate.\rCheck that the provided username and password are correct.");
+                appendErrorText(botOutputBox, "Reddit login information provided did not authenticate.\rCheck that the provided username and password are correct.");
                 return;
             }
 
