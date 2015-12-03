@@ -67,6 +67,9 @@
     <Compile Include="RedditConnectionDialog.xaml.cs">
       <DependentUpon>RedditConnectionDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RedditSubredditDialog.xaml.cs">
+      <DependentUpon>RedditSubredditDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UtilFunc.cs" />
     <Page Include="IrcConnectionDialog.xaml">
       <SubType>Designer</SubType>
@@ -85,6 +88,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="RedditConnectionDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RedditSubredditDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

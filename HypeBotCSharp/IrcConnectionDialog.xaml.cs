@@ -19,12 +19,10 @@ namespace HypeBotCSharp
     /// </summary>
     public partial class IrcConnectionDialog : Window
     {
-        private string ircHostname;
-        private string ircNick;
-        private string ircPass = null;
         public IrcConnectionDialog()
         {
             InitializeComponent();
+            this.Owner = App.Current.MainWindow;
         }
 
         private void ircConnectSubmitButton_Click(object sender, RoutedEventArgs e)

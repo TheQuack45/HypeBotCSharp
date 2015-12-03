@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:HypeBotCSharp"
         mc:Ignorable="d"
-        Title="IRC Connect" Height="231.042" Width="264.706">
+        Title="IRC Connect" Height="231.042" Width="264.706" ResizeMode="CanMinimize" ShowInTaskbar="False">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition/>

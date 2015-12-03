@@ -43,8 +43,11 @@ namespace HypeBotCSharp
 
         public static Reddit redditConnection;
         public static AuthenticatedUser redditUser;
+        public static Subreddit parentSubreddit;
         public static string redditUsername;
         public static string redditPassword;
+        public static string parentSubredditString;
+        public static string parentSubredditCounterStickyId;
 
         List<string> previousCommandList = new List<string>();
         int previousCommandListIndex;
@@ -64,6 +67,7 @@ namespace HypeBotCSharp
 
             if (commandList[0] == ":IRC")
             {
+                // Admin is attempting to make an IRC command
                 if (isIrcConnected)
                 {
                     // Bot is connected to an IRC server
@@ -72,7 +76,7 @@ namespace HypeBotCSharp
                     {
                         // Admin has chosen to join an IRC channel
                         ircClient.JoinChannel(commandList[2]);
-                    } 
+                    }
                     else if (commandList[1] == "say")
                     {
                         // Admin has chosen to manually send a message
@@ -145,6 +149,20 @@ namespace HypeBotCSharp
                     appendErrorText(botOutputBox, "Please connect to an IRC server by using 'Setup -> Connect' before making IRC commands");
                 }
             }
+            else if (commandList[0] == ":RDT")
+            {
+                // Admin is attempting to make a Reddit command
+                if (isRedditConnected)
+                {
+                    // Bot is connected and logged in to Reddit; continue
+                    // TODO: Implement Reddit admin commands
+                }
+                else
+                {
+                    // Bot is not connected to Reddit, fail
+                    appendErrorText(botOutputBox, "Please login to a Reddit account by using 'Setup -> Reddit' before making Reddit commands");
+                }
+            }
             else
             {
                 // Command unrecognized
@@ -187,15 +205,79 @@ namespace HypeBotCSharp
             asyncOutputBoxColorAppend(botOutputBox, messageReceivedEventArgs.PrivateMessage.User.Nick.ToString(), "Green");
             asyncOutputBoxColorAppend(botOutputBox, "> " + messageReceivedEventArgs.PrivateMessage.Message + "\r", "Black");
 
-            if (messageTextArr[0] == "!hypeBot")
+            if (string.Equals(messageTextArr[0], "!hypebot", StringComparison.OrdinalIgnoreCase))
             {
                 // Message is command for HypeBot
-                if (messageTextArr[1] == "hello")
+                if (string.Equals(messageTextArr[1], "hello", StringComparison.OrdinalIgnoreCase))
                 {
                     // Message requests "hello" response
                     string returnMessage = "Hello, " + messageReceivedEventArgs.PrivateMessage.User.Nick + "!";
                     ircClient.Channels[messageReceivedEventArgs.PrivateMessage.Source].SendMessage(returnMessage);
                     asyncOutputBoxAppend(botOutputBox, "    <" + ircClient.User.Nick + "> " + returnMessage);
+                }
+                else if (string.Equals(messageTextArr[1], "makesamplepost", StringComparison.OrdinalIgnoreCase))
+                {
+                    // TODO: Remove this command
+                    // Message requests sample Reddit post
+                    string timeStamp = DateTime.Now.ToString("HH:mm:ss");
+                    parentSubreddit.SubmitTextPost(("Sample post " + timeStamp), "This is a sample post made by the C# bot");
+                }
+                else if (string.Equals(messageTextArr[1], "inc", StringComparison.OrdinalIgnoreCase))
+                {
+                    // TODO: Complete hype counter increment code
+                    // Increment a hype counter
+                    Uri counterPostUri;
+                    Uri.TryCreate("http://www.reddit.com/r/" + parentSubredditString + "/comments/" + parentSubredditCounterStickyId, UriKind.Absolute, out counterPostUri);
+                    Post counterPostObj = redditConnection.GetPost(counterPostUri);
+                    string counterPostText = counterPostObj.SelfText;
+
+                    if (string.Equals(messageTextArr[2], "mc", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // Requested counter is a Minecraft counter
+                        if (string.Equals(messageTextArr[3], "dhype", StringComparison.OrdinalIgnoreCase))
+                        {
+                            // Requested counter is a Minecraft Death Hype counter. Store line in `foundLine`
+
+                            // Find original counter line
+                            string lineFindPattern = "\\*\\*Minecraft[\\s\\w]{1,}:\\*\\* DEATH HYPE \\d{1,}\\.\\d{1,}";
+                            string[] regexSplitArr = Regex.Split(counterPostText, lineFindPattern);
+                            string foundLine = Regex.Match(counterPostText, lineFindPattern).ToString();
+
+                            // Find counter integer, increase by 1. Store new integer in `newCounterInt`
+                            // Concatenate new line and store in `finalLine`
+                            string counterIntPattern = "[1-9]{1,}";
+                            string[] finalIntLineArr = new string[3];
+                            string[] intSplitArr = Regex.Split(foundLine, counterIntPattern);
+                            int counterInt = Int32.Parse(Regex.Match(foundLine, counterIntPattern).ToString());
+                            int newCounterInt = counterInt++;
+                            finalIntLineArr[0] = intSplitArr[0];
+                            finalIntLineArr[1] = newCounterInt.ToString();
+                            finalIntLineArr[2] = intSplitArr[1];
+                            string finalLine = null;
+                            foreach (string currentString in finalIntLineArr)
+                            {
+                                // Concatenate final string from string array
+                                finalLine += currentString;
+                            }
+
+                            // Concatenate final post text
+                            string finalCounterPostText = null;
+                            finalCounterPostText += regexSplitArr[0];
+                            finalCounterPostText += finalLine;
+                            finalCounterPostText += regexSplitArr[1];
+
+                            // Submit edited post
+                            try
+                            {
+                                counterPostObj.EditText(finalCounterPostText);
+                            }
+                            catch (Exception e)
+                            {
+                                // TODO: Shit crashes, fix that shit
+                                asyncOutputBoxAppend(botOutputBox, e.ToString());
+                            }
+                        }
+                    }
                 }
             }
             else
@@ -300,7 +382,9 @@ namespace HypeBotCSharp
             }
 
             // Check for full information entry
-            if (ircNick == "" || ircUser == "" || ircHostname == "" || ircNick == null || ircUser == null || ircHostname == null)
+            if (ircNick == "" || ircUser == "" || ircHostname == "" || 
+                ircNick == null || ircUser == null || ircHostname == null ||
+                ircNick == "Nickname" || ircUser == "Username" || ircHostname == "Server Host IP")
             {
                 // User did not enter full information; do not attempt to connect
                 appendErrorText(botOutputBox, "Please enter all required fields (Host, nick, user)\r");
@@ -374,6 +458,8 @@ namespace HypeBotCSharp
             RedditConnectionDialog redditConnectResult = new RedditConnectionDialog();
             redditConnectResult.ShowDialog();
 
+            redditConnection = new Reddit();
+
             // Handle connection info dialog
             if (redditConnectResult != null)
             {
@@ -398,9 +484,12 @@ namespace HypeBotCSharp
                 return;
             }
 
+            botOutputBox.AppendText("Reddit connection established successfully.");
+
             isRedditConnected = true;
             mainWindowMenuSetupDropDownRedditConnectButton.IsEnabled = false;
             mainWindowMenuDestroyDropDownRedditButton.IsEnabled = true;
+            mainWindowMenuRedditDropDownSetupButton.IsEnabled = true;
             return;
         }
 
@@ -450,14 +539,26 @@ namespace HypeBotCSharp
             redditConnection = null;
             redditUsername = null;
             redditPassword = null;
+            parentSubredditString = null;
 
             mainWindowMenuSetupDropDownRedditConnectButton.IsEnabled = true;
             mainWindowMenuDestroyDropDownRedditButton.IsEnabled = false;
+            mainWindowMenuRedditDropDownSetupButton.IsEnabled = false;
         }
 
         private void mainWindowMenuRedditDropDownSetupButton_Click(object sender, RoutedEventArgs e)
         {
+            // TODO: Create dialog to get parent subreddit
+            RedditSubredditDialog redditSubredditResult = new RedditSubredditDialog();
+            redditSubredditResult.ShowDialog();
 
+            // Handle subreddit info dialog
+            if (redditSubredditResult != null)
+            {
+                redditSubredditResult = null;
+            }
+
+            parentSubreddit = redditConnection.GetSubreddit(parentSubredditString);
         }
     }
 }

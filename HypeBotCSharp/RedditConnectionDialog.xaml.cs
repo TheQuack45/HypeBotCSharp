@@ -22,12 +22,13 @@ namespace HypeBotCSharp
         public RedditConnectionDialog()
         {
             InitializeComponent();
+            this.Owner = App.Current.MainWindow;
         }
 
         private void ircConnectSubmitButton_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.redditUsername = redditConnectUsernameTextbox.Text;
-            MainWindow.redditPassword = redditConnectPasswordTextbox.Text;
+            MainWindow.redditPassword = redditConnectPasswordTextbox.Password;
 
             this.Close();
         }
@@ -47,24 +48,6 @@ namespace HypeBotCSharp
             if (redditConnectUsernameTextbox.Text == "")
             {
                 redditConnectUsernameTextbox.Text = "Username";
-            }
-        }
-
-        private void redditConnectPasswordTextbox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            // Clear text box for entry
-            if (redditConnectPasswordTextbox.Text == "Password")
-            {
-                redditConnectPasswordTextbox.Text = "";
-            }
-        }
-
-        private void redditConnectPasswordTextbox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            // Fill text box with placeholder
-            if (redditConnectPasswordTextbox.Text == "")
-            {
-                redditConnectPasswordTextbox.Text = "Password";
             }
         }
     }
