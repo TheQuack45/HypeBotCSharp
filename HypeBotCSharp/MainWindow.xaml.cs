@@ -480,7 +480,7 @@ namespace HypeBotCSharp
             }
             catch (AuthenticationException)
             {
-                appendErrorText(botOutputBox, "Reddit login information provided did not authenticate.\rCheck that the provided username and password are correct.");
+                appendErrorText(botOutputBox, "Reddit login information provided did not authenticate.\rCheck that the provided username and password are correct.\r");
                 return;
             }
 
